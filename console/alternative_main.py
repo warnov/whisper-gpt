@@ -13,7 +13,11 @@ import sys
 from openai import AzureOpenAI
 
 
+
+
+#Adding the common folder to the path so we can import the NamedBytesIO class
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
+#Importing the NamedBytesIO class
 from named_bytes_io import NamedBytesIO 
 
 
