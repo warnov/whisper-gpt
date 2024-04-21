@@ -64,4 +64,58 @@ def FxWavProcessor(myblob: func.InputStream):
         model=whisper_model
     )
     result=transcription.text
-    logging.info(result)
+
+
+    #Now lets analize the transcription using the GPT-4 model
+    #========================================================
+
+
+    
+
+
+    #First, let's define the template in which the analysis is going to be returned
+    template_summary = """
+    {
+        "CustomerName":,
+        "GeographicalLocation":,
+        "ProductOfInterest":
+    }
+    """
+
+
+
+    #Now let's create the prompt that is going to be sent to the GPT-4 model
+    #Observe how it includes the order, the result of the whisper model and the template
+    system_prompt = (
+        "From the following call transcript, please return the required information in the template provided after the call transcript:"
+        f"\n\nCall Transcript:\n{result}"
+        f"\n\nTemplate:\n{template_summary}")
+
+
+
+
+    
+    #Now let's create the AzureOpenAI client
+    #========================================
+    openAIClient=AzureOpenAI(
+        api_key=os.getenv("AZURE_OPENAI_API_KEY"), #This is the API key that you get from the Azure OpenAI portal
+        api_version="2024-02-01",
+        azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT") #This is the endpoint that you get from the Azure OpenAI portal
+    )
+
+
+
+    #Make a call to the ChatCompletion API to get the template filled
+    deployment_id = "gpt-4"
+    result = openAIClient.chat.completions.create(
+        model=gpt_model,
+        messages=[
+            {"role":"system", "content":system_prompt}
+        ],
+        max_tokens=500
+    )
+
+    jsonMessage = result.choices[0].message.content
+
+    #Logging the result
+    logging.info(jsonMessage)
