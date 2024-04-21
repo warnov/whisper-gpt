@@ -9,26 +9,27 @@
 
 
 import os
-from named_bytes_io import NamedBytesIO 
+import sys
 from openai import AzureOpenAI
 
 
-
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
+from named_bytes_io import NamedBytesIO 
 
 
 #First let's get a file stream from disk
 #=========================================================================================================
 
 #We are going to need its path. Observe how we use a file without an extension, as it could happen when working with streams of data from APIs or Blob Triggered Azure Functions
-original_file_name = './test'
+original_file_name = './console/test'
 
 #Now let's get the stream. In this moment that stream has a name attribute without an extension that will break the Whisper API call,
 #as it could happen when working with streams of data from APIs or Blob Triggered Azure Functions
-file_stream = open(original_file_name, 'rb')
+file_stream = open(original_file_name, 'rb').read()
 
 #To fix this, we are going to create a NamedBytesIO object from this stream, and set the name attribute with the extension required by the Whisper API
 #Observe how we explicitly set the name attribute
-buffered_file = NamedBytesIO.from_file(file_stream, new_name="test.wav")
+buffered_file = NamedBytesIO.from_file_stream(file_stream, new_name="test.wav")
 
 #Now let's set the models to use
 gpt_model = "gpt-4"

@@ -21,10 +21,6 @@ class NamedBytesIO(io.BytesIO):
 
     #This method is used to create a NamedBytesIO object from a file stream and set the name attribute as required for exmaple by the Whisper API
     @classmethod
-    def from_file(cls, file_stream, new_name):
-        
-        # Read data from the provided file stream
-        data = file_stream.read()
-        
+    def from_file_stream(cls, file_stream, new_name):
         # Return a new instance of NamedBytesIO with this data and the new name
-        return cls(data, new_name)
+        return cls(file_stream, new_name)

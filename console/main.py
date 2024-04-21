@@ -3,11 +3,10 @@ from openai import AzureOpenAI
 
 
 
-
 #Let's read the file from disk to memory
 #========================================
 #This is the audio file that we are going to use for the transcription. Change the route to the file that you want to use
-audio_test_file = "./test.wav"
+audio_test_file = "./console/test.wav"
 file_stream = open(audio_test_file, "rb")
 
 
