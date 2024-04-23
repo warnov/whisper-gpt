@@ -18,6 +18,7 @@ This Python workspace demonstrates how to use the Azure OpenAI API to transcribe
 
 - `AZURE_OPENAI_API_KEY`: Your Azure OpenAI API key.
 - `AZURE_OPENAI_ENDPOINT`: The endpoint for the Azure OpenAI API.
+- `COSMOSDB_CONNSTRING`: The CosmosDB connection string
 
 ## Scenarios
 
@@ -25,7 +26,7 @@ This Python workspace demonstrates how to use the Azure OpenAI API to transcribe
 We start with the basics in a console application. This application has two approaches. The first one, showing us how to use a `.wav` file to read the audio from, and the second, how to start from a stream of bytes (ideal for Azure Functions or other kind of API Services) 
 
 #### Basic Workflow
-This workflow main entry point is the [main.py](/console/main.py) file.
+This workflow main entry point is the [`main.py`](/console/main.py) file.
 1. **Setup**: The script first sets up the AzureOpenAI client using your API key and endpoint.
 
 2. **Audio Transcription**: The script then transcribes an audio file (`test.wav`) using the Whisper model.
@@ -41,8 +42,7 @@ The extracted information is then printed to the console.
 
 3. **Information Extraction**: The script uses the GPT-4 model to extract specific information from the transcription. It sends a system prompt to the model, which includes the transcription and a template for the information to be extracted.
 
-The extracted information is then printed to the console.
-
+The extracted information is then assembled into a [`TranscriptionAnalysis`](/common/s2t_analysis.py) that will be part of an [`AnalysisResult`](/common/s2t_analysis.py): the final object that will have both the transcription analysis as well as the metadata of this record to be persisted in CosmosDB. These objects need to implement a `to_dict` method as the CosmosDB SDK receives dictionary objects to insert them as documents in the given collection.
 
 
 ##### Output
@@ -56,6 +56,8 @@ The primary entry point for this workflow is the [`alternative_main.py`](/consol
 This alternative scenario is designed to address situations where data is available only as a byte stream, rather than a file from physical storage. This situation is commonly encountered in Blob Triggered Azure functions or when processing data streams from APIs. These sources typically provide a byte stream without a file, lacking a `name` attribute. This absence can cause issues with the Whisper API, which depends on reading the file extension to verify it matches expected types.
 
 To address this issue, I have created the [`NamedBytesIO`](/console/named_bytes_io.py) class. This class allows the instantiation of an object that includes both a `name` attribute and a byte stream. This mimics a file stream but does not require a file from physical storage.
+
+The insertion of this results in CosmosDB are done as in the basic scenario.
 
 ### Azure Function
 
